@@ -2,6 +2,9 @@ name: Build and deploy NBA tracker
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
 
 permissions:
   contents: read
