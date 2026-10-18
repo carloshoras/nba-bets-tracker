@@ -1,7 +1,6 @@
 name: Build and deploy NBA tracker
 
 on:
-on:
   workflow_dispatch:
   schedule:
     - cron: '0 7 * * *'
