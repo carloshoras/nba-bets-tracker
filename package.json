@@ -1,0 +1,23 @@
+{
+  "name": "nba-bets-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Seguimiento de nuestras apuestas NBA de la temporada 2026-27",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "fetch-data": "tsx src/fetch-data.ts",
+    "check-scraping": "npm run typecheck && tsx src/check-scraping.ts",
+    "check-parser": "npm run typecheck && tsx src/check-parser.ts",
+    "prepare-data": "npm run typecheck && tsx src/prepare-data.ts",
+    "build:local": "npm run typecheck && tsx src/build.ts",
+    "build": "npm run check-scraping && npm run prepare-data && npm run build:local"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "cheerio": "1.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}

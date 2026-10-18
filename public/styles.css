@@ -1,0 +1,216 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 24px;
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+}
+
+h1 {
+    text-align: center;
+}
+
+h1,
+h2 {
+    color: #f8fafc;
+}
+
+p {
+    margin: 0;
+    text-align: center;
+    color: #94a3b8;
+}
+
+main {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* Una conferencia debajo de otra por defecto. */
+.tables-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-top: 22px;
+}
+
+.tables-container > section {
+    min-width: 0;
+}
+
+section h2 {
+    margin: 0 0 16px;
+}
+
+/* El desplazamiento horizontal queda dentro de cada tabla. */
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    min-width: 560px;
+    table-layout: fixed;
+    border-collapse: collapse;
+    background: #1e293b;
+}
+
+thead {
+    background: #172033;
+}
+
+th {
+    color: #94a3b8;
+}
+
+/* Mismos anchos para ambas conferencias. */
+.column-seed {
+    width: 9%;
+}
+
+.column-team {
+    width: 32%;
+}
+
+.column-record {
+    width: 22%;
+}
+
+.column-bets {
+    width: 37%;
+}
+
+th,
+td {
+    padding: 6px 2px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #334155;
+}
+
+td {
+    font-size: 14px;
+}
+
+th:first-child,
+td:first-child {
+    text-align: center;
+}
+
+/* Mantiene el récord en una línea y alinea mejor los números. */
+td:nth-child(3) {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Permite saltos entre apuestas, pero no dentro de ellas. */
+td:last-child {
+    overflow-wrap: normal;
+}
+
+td:last-child span {
+    white-space: nowrap;
+}
+
+.team-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.team-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.team-abbreviation {
+    display: none;
+    text-decoration: none;
+}
+
+.winning {
+    color: #4ade80;
+    font-weight: bold;
+}
+
+.losing {
+    color: #fb7185;
+    font-weight: bold;
+}
+
+.pending {
+    color: #94a3b8;
+}
+
+/* Resalta la fila al pasar el ratón. */
+@media (hover: hover) {
+    tbody tr:hover {
+        background: #273449;
+    }
+}
+
+/* Dos conferencias lado a lado cuando hay espacio suficiente. */
+@media (min-width: 1200px) {
+    .tables-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    table {
+        min-width: 0;
+    }
+
+    .column-seed {
+        width: 9%;
+    }
+
+    .column-team {
+        width: 18%;
+    }
+
+    .column-record {
+        width: 25%;
+    }
+
+    .column-bets {
+        width: 48%;
+    }
+
+    th,
+    td {
+        padding: 10px 4px;
+        font-size: 12px;
+    }
+
+    .team-cell {
+        gap: 4px;
+    }
+
+    .team-logo {
+        width: 22px;
+        height: 22px;
+    }
+
+    .team-name {
+        display: none;
+    }
+
+    .team-abbreviation {
+        display: inline;
+    }
+
+    td:nth-child(3) {
+        white-space: normal;
+    }
+}
