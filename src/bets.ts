@@ -91,6 +91,6 @@ export const bets: Record<string, Bet[]> = {
         { type: "wins", minimum: 55 },
     ],
     GSW: [
-        { type: "conference-seed", side: "under", line: 8.5 },
+        { type: "conference-seed", side: "over", line: 8.5 },
     ],
 };

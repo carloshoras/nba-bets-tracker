@@ -137,7 +137,7 @@ const html = `
 
       <p>
         Los datos se actualizan cada día a las 8:00 AM (GMT+2).
-        Última actualización: ${escapeHtml(new Date(standings.updatedAt).toLocaleString())}.
+        Última actualización: ${escapeHtml(new Date(standings.updatedAt).toLocaleString("es-ES"))}.
       </p>
       <div class="tables-container">
       ${renderConference("east", "Eastern Conference")}
