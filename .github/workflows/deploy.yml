@@ -1,9 +1,12 @@
 name: Build and deploy NBA tracker
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Para activar con el botón manual
+  push:
+    branches: [ "main" ]  # Para actualizar al instante cuando subas código
   schedule:
-    - cron: '0 7 * * *'
+    - cron: '0 6 * * *'  # Para actualizarse solo a las 8:00 AM / 9:00 AM
+
 
 
 permissions:
