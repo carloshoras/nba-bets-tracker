@@ -11,7 +11,7 @@
     "check-parser": "npm run typecheck && tsx src/check-parser.ts",
     "prepare-data": "npm run typecheck && tsx src/prepare-data.ts",
     "build:local": "npm run typecheck && tsx src/build.ts",
-    "build": "npm run check-scraping && npm run prepare-data && npm run build:local"
+    "build": "tsc" 
   },
   "license": "ISC",
   "devDependencies": {
@@ -19,5 +19,8 @@
     "cheerio": "1.0.0",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1154.0"
   }
 }

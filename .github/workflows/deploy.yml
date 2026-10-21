@@ -1,23 +1,16 @@
-name: Build and deploy NBA tracker
+name: Deploy Scraper to AWS Lambda
 
 on:
-  workflow_dispatch:  # Para activar con el botón manual
   push:
-    branches: [ "main" ]  # Para actualizar al instante cuando subas código
-  schedule:
-    - cron: '0 6 * * *'  # Para actualizarse solo a las 8:00 AM / 9:00 AM
-
-
+    branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
+  id-token: write # Requerido para pedir tokens seguros a AWS sin contraseñas
   contents: read
 
-concurrency:
-  group: github-pages
-  cancel-in-progress: false
-
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,33 +20,28 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20.11.0"
+          node-version: "22.x"
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build website
-        run: npm run build
+      - name: Build TypeScript to JavaScript
+        run: npx tsc # Compila tus archivos .ts a .js nativos
 
-      - name: Upload website files
-        uses: actions/upload-pages-artifact@v4
+      - name: Configure AWS Credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          path: dist
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }} # Lee de forma segura tu secreto de GitHub
+          aws-region: eu-west-1 # La región de tu Lambda (Irlanda)
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
+      - name: Package code into ZIP
+        run: |
+          npm prune --production
+          zip -r deploy.zip dist/ node_modules/ package.json
 
-    permissions:
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Publish website
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy to AWS Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name nba-tracker-scraper \
+            --zip-file fileb://deploy.zip
