@@ -27,7 +27,9 @@ jobs:
         run: npm ci
 
       - name: Build TypeScript to JavaScript
-        run: npx tsc # Compila tus archivos .ts a .js nativos
+        run: |
+          npm run build
+          test -f dist/index.js
 
       - name: Inspect OIDC identity
         uses: actions/github-script@v8

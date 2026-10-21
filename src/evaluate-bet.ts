@@ -17,6 +17,9 @@ export const evaluateBet = (team: TeamStanding, bet: Bet ): boolean => {
             return currentProjectedWins >= bet.minimum;
 
         case "conference-seed":
+            console.log(`Evaluando apuesta de conferencia para ${team.abbreviation}:`);
+            console.log(`  Línea: ${bet.side} ${bet.line}`);
+            console.log(`  Posición actual: ${team.conferenceRank}`);
             if (bet.side === "under") {
                 return team.conferenceRank <= bet.line;
             } else {
