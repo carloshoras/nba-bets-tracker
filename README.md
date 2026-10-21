@@ -1,1 +1,1 @@
-Github actions des`pliega en AWS
+Github actions despliega en AWS
