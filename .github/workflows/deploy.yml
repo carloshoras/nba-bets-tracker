@@ -29,6 +29,19 @@ jobs:
       - name: Build TypeScript to JavaScript
         run: npx tsc # Compila tus archivos .ts a .js nativos
 
+      - name: Inspect OIDC identity
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const token = await core.getIDToken("sts.amazonaws.com");
+            const payload = JSON.parse(
+              Buffer.from(token.split(".")[1], "base64url").toString("utf8")
+            );
+
+            console.log("issuer:", payload.iss);
+            console.log("audience:", payload.aud);
+            console.log("subject:", payload.sub);
+
       - name: Configure AWS Credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
