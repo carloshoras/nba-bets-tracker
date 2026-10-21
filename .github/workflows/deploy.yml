@@ -32,8 +32,13 @@ jobs:
       - name: Configure AWS Credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }} # Lee de forma segura tu secreto de GitHub
-          aws-region: eu-west-1 # La región de tu Lambda (Irlanda)
+          role-to-assume: arn:aws:iam::283298108580:role/github-actions-lambda-role
+          aws-region: eu-west-1
+          audience: sts.amazonaws.com
+          retry-max-attempts: 2
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
 
       - name: Package code into ZIP
         run: |
