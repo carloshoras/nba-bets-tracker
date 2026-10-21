@@ -1,4 +1,5 @@
-import { mkdir, readFile, writeFile, cp } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
+import { standingsJsonPath } from "./data-paths.js";
 import { bets } from "./bets.js";
 import type { Bet } from "./bets.js";
 import { evaluateBet } from "./evaluate-bet.js";
@@ -8,7 +9,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 export async function main() {
   
   // Leemos el JSON que ha generado prepare-data.
-  const content = await readFile("data/standings.json", "utf8");
+  const content = await readFile(standingsJsonPath, "utf8");
   const standings = JSON.parse(content) as Standings;
   
   // Convierte caracteres especiales en texto seguro para el HTML.
