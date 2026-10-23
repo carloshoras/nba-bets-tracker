@@ -7,64 +7,64 @@ import type { Standings, TeamStanding } from "./team-standing.js";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 export async function main() {
-  
+
   // Leemos el JSON que ha generado prepare-data.
   const content = await readFile(standingsJsonPath, "utf8");
   const standings = JSON.parse(content) as Standings;
-  
+
   // Convierte caracteres especiales en texto seguro para el HTML.
   function escapeHtml(text: string): string {
-      return text
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#39;");
+    return text
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
   }
-  
+
   // Genera el texto visible de una apuesta.
   function formatBet(bet: Bet): string {
-      switch (bet.type) {
-          case "wins":
-              return `${bet.minimum}+(${(
-                  (bet.minimum / 82) * 100
-              ).toFixed(1)}%)`;
-  
-          case "conference-seed":
-              return `${bet.side === "under" ? "U" : "O"}${bet.line}`;
-  
-          case "division-position":
-              return `${bet.position}º div`;
-      }
+    switch (bet.type) {
+      case "wins":
+        return `${bet.minimum}+(${(
+          (bet.minimum / 82) * 100
+        ).toFixed(1)}%)`;
+
+      case "conference-seed":
+        return `${bet.side === "under" ? "U" : "O"}${bet.line}`;
+
+      case "division-position":
+        return `${bet.position}º div`;
+    }
   }
-  
+
   // Genera una fila de la tabla.
   function renderTeamRow(team: TeamStanding): string {
-      const gamesPlayed = team.wins + team.losses;
-  
-      const percentage =
-          gamesPlayed === 0
-              ? "—"
-              : `${((team.wins / gamesPlayed) * 100).toFixed(1)}%`;
-  
-      const teamBets = bets[team.abbreviation] ?? [];
-  
-      const betsHtml = teamBets
-          .map((bet) => {
-              const result = evaluateBet(team, bet);
-  
-              const status =
-                  result ? "winning" : "losing";
-  
-              return `
+    const gamesPlayed = team.wins + team.losses;
+
+    const percentage =
+      gamesPlayed === 0
+        ? "—"
+        : `${((team.wins / gamesPlayed) * 100).toFixed(1)}%`;
+
+    const teamBets = bets[team.abbreviation] ?? [];
+
+    const betsHtml = teamBets
+      .map((bet) => {
+        const result = evaluateBet(team, bet);
+
+        const status =
+          result ? "winning" : "losing";
+
+        return `
           <span class="${status}">
             ${escapeHtml(formatBet(bet))}
           </span>
         `;
-          })
-          .join("  ||  ");
-  
-      return `
+      })
+      .join("  ||  ");
+
+    return `
       <tr>
         <td>${team.conferenceRank}</td>
         <td>
@@ -87,17 +87,17 @@ export async function main() {
       </tr>
     `;
   }
-  
+
   // Genera una tabla completa.
   function renderConference(
-      conference: TeamStanding["conference"],
-      title: string,
+    conference: TeamStanding["conference"],
+    title: string,
   ): string {
-      const teams = standings.teams
-          .filter((team) => team.conference === conference)
-          .sort((a, b) => a.conferenceRank - b.conferenceRank);
-  
-      return `
+    const teams = standings.teams
+      .filter((team) => team.conference === conference)
+      .sort((a, b) => a.conferenceRank - b.conferenceRank);
+
+    return `
       <section>
         <h2>${escapeHtml(title)}</h2>
   
@@ -125,7 +125,7 @@ export async function main() {
       </section>
     `;
   }
-  
+
   const html = `
   <!doctype html>
   <html lang="es">
@@ -140,7 +140,7 @@ export async function main() {
         <h1>Pedrinho & Carlazo NBA Bets Tracker</h1>
   
         <p>
-          Los datos se actualizan cada día a las 8:00 AM (GMT+2).
+          Los datos se actualizan cada día a las 11:00 AM (GMT+2).
           Última actualización: ${escapeHtml(new Date(standings.updatedAt).toLocaleString("es-ES"))}.
         </p>
         <div class="tables-container">
@@ -152,23 +152,24 @@ export async function main() {
     </body>
   </html>
   `;
-  
+
   // Inicializamos el cliente de AWS apuntando a Irlanda (eu-west-1), donde está tu bucket
   const s3 = new S3Client({ region: "eu-west-1" });
   const BUCKET_NAME = "nba-bets-tracker";
-  
+
   try {
-      // Subimos el contenido de la variable 'html' directamente a la raíz de tu S3
-      await s3.send(new PutObjectCommand({
-          Bucket: BUCKET_NAME,
-          Key: "index.html",
-          Body: html,
-          ContentType: "text/html",
-      }));
-      
-      console.log(`¡index.html generado y subido con éxito a S3 para ${standings.teams.length} equipos!`);
+    // Subimos el contenido de la variable 'html' directamente a la raíz de tu S3
+    await s3.send(new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: "index.html",
+      Body: html,
+      ContentType: "text/html; charset=utf-8",
+      CacheControl: "public, max-age=0, s-maxage=60",
+    }));
+
+    console.log(`¡index.html generado y subido con éxito a S3 para ${standings.teams.length} equipos!`);
   } catch (error) {
-      console.error("Error crítico al intentar subir el HTML a Amazon S3:", error);
-      throw error; // Lanzamos el error para que si algo falla, el proceso se entere
+    console.error("Error crítico al intentar subir el HTML a Amazon S3:", error);
+    throw error; // Lanzamos el error para que si algo falla, el proceso se entere
   }
 }
